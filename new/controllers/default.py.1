@@ -1,0 +1,215 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a samples controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+## - call exposes all registered services (none by default)
+#########################################################################
+
+def index():
+    sentences = db().select(db.sentence.ALL, orderby=db.sentence.id)
+    t0=0.0
+    t1=0.0
+
+    hintLevelForm=SQLFORM.factory(Field('hintName',
+                                 label='Please choose the Hint Level',
+                                 requires=IS_IN_SET(['No Hint', 'Source Hint (Basque Sentence)', 'Machine Translation Hint (Apertium Sentence)', 'Both Source and Machine Translation Hint'])
+                                 ))
+    #for j in sentences:
+     #   testcase = j
+      #  break
+    #testcase = db(db.sentence.flagNoHint == False).select(db.sentence.ALL)
+    testcase = db.sentence(id>0)#for dummy value
+    #check temp
+    for testcase in sentences:
+                if testcase.flagNoHint == False:
+                    break
+    #response.flash = testcase.source
+    hintLevel = -1
+    hintFeedback = ''
+    tempHint=-100
+    if request.vars.hintName:#LevelForm.process().accepted
+        tempHint = hintLevel
+        response.flash = 'hello'
+        hintFeedback = 'You have selected ' + request.vars.hintName#hintLevelForm.vars.hintName
+        if request.vars.hintName == 'No Hint':
+            hintLevel = 0
+        elif request.vars.hintName == 'Source Hint (Basque Sentence)':
+            hintLevel = 1
+        elif request.vars.hintName == 'Machine Translation Hint (Apertium Sentence)':
+            hintLevel = 2
+        elif request.vars.hintName == 'Both Source and Machine Translation Hint':
+            hintLevel = 3
+
+        tempHint = hintLevel
+        #identify which test case to show, based on user selection for the hints
+        if hintLevel == 0:
+            for testcase in sentences:
+                if testcase.flagNoHint == False:
+                    break
+        elif hintLevel == 1:
+            for testcase in sentences:
+                if testcase.flagSourceHint == False:
+                   break
+        elif hintLevel == 2:
+            for testcase in sentences:
+                if testcase.flagApertiumHint == False:
+                    ID = testcase.id
+                    break
+        elif hintLevel == 3:
+           for testcase in sentences:
+                if testcase.flagBothHints == False:
+                    ID = testcase.id
+                    break
+
+    words = []
+    maskedWords={}
+    gussedWords=[]
+    clozeTable0 = db().select(db.clozeWords.ALL, orderby=db.clozeWords.sentenceID)
+    
+    tempword='sdf'
+    clozeForm=FORM('testing:',
+              INPUT(_name='nani'),
+              INPUT(_type='submit', _value="I'm feeling lucky"),
+              _method='post')    
+    
+    #Generate dynamic SQL form for reference sentence
+    inputs_list = []
+    labelString = ''
+    temp = 'boo'
+    words = testcase.reference.split()
+    for i in range( (len(words)/5) *5):           
+        if (i+1)%5: #label mein 
+            labelString += words[i] +' '
+        else: # i is multiple of 5
+            inputs_list.append(Field(words[i], label = labelString, type='string', length = 1))
+            labelString = ''
+    clozeForm = SQLFORM.factory(*inputs_list)
+    
+    
+    #if clozeForm.process().accepted:
+    #if request.vars.nani:
+     #   response.flash = hintLevel
+    #    db.clozeWords.insert(sentenceID=testcase.id, hintLevel=hintLevel, referenceWord='maksed', userGuess=request.vars.nani)
+    
+    #response.flash = 'your comment is posted'
+    #db.person.insert(name="Bob")
+    return dict(words=words, clozeTable0=clozeTable0, maskedWords=maskedWords, gussedWords=gussedWords, t0=t0, t1=t1, hintLevelForm=hintLevelForm, hintLevel=hintLevel, hintFeedback=hintFeedback, testcase=testcase, clozeForm=clozeForm)
+
+def thankyou():
+    return dict()
+
+def viewRecords():
+    #myquery = (db.mytable.myfield != None) | (db.mytable.myfield > 'A')
+    notEvaluated = db( (db.sentence.flagNoHint == False) &
+                       (db.sentence.flagSourceHint == False) &
+                       (db.sentence.flagApertiumHint == False) &
+                       (db.sentence.flagBothHints == False)).select(db.sentence.ALL)
+
+    evaluated = db( (db.sentence.flagNoHint == True) |
+                       (db.sentence.flagSourceHint == True) |
+                       (db.sentence.flagApertiumHint     == True) |
+                       (db.sentence.flagBothHints == True)).select(db.sentence.ALL)
+
+    return dict(notEvaluated=notEvaluated, evaluated=evaluated)
+
+def results():
+    evaluatedNoHint = db(db.sentence.flagNoHint == True).select(db.sentence.ALL)
+
+    evaluatedSourceHint = db(db.sentence.flagSourceHint == True).select(db.sentence.ALL)
+
+    clozeTable0 = db(db.clozeWords.hintLevel == 'No Hint').select(db.clozeWords.ALL)
+    clozeTable1 = db(db.clozeWords.hintLevel == 'Source Hint').select(db.clozeWords.ALL)
+
+    #wordPairDict={} #contains word pair, with their sentence id
+
+    #for pair in clozeTable0:
+    #    wordpairs=[]
+    #    correctResponse=0
+    #    blanksLeft=0
+    #    for sentence in evaluatedNoHint:
+    #        singlePair=[]
+    #        if pair.sentenceID  == sentence.id:
+    #            singlePair.append( pair.referenceWord)
+    #            singlePair.append( pair.userGuess)
+    #            if pair.referenceWord==pair.userGuess:
+    #                correctResponse +=1
+    #            elif pair.userGuess=='':
+    #                blanksLeft +=1
+    #
+    #        wordpairs.append(singlePair)
+    #    wordpairs.append(correctResponse)
+    #    wordpairs.append(blanksLeft)
+    #    wordPairDict[sentence.id] = wordpairs
+
+    correctResponse=0
+    blanksLeft=0
+    totalResponse=0
+
+    return dict(evaluatedNoHint=evaluatedNoHint,  clozeTable0=clozeTable0, clozeTable1=clozeTable1, correctResponse=correctResponse, blanksLeft=blanksLeft, totalResponse=totalResponse, evaluatedSourceHint=evaluatedSourceHint ) # ,wordPairDict=wordPairDict
+
+
+#@auth.requires_permission('read','person')
+def addSentences():
+    form = SQLFORM(db.sentence)
+    if form.process().accepted:
+        response.flash = 'record inserted'
+    else:
+        response.flash = 'please fill the form'
+    return dict(form=form)
+
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    """
+    return dict(form=auth())
+
+
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request,db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+
+
+@auth.requires_signature()
+def data():
+    """
+    http://..../[app]/default/data/tables
+    http://..../[app]/default/data/create/[table]
+    http://..../[app]/default/data/read/[table]/[id]
+    http://..../[app]/default/data/update/[table]/[id]
+    http://..../[app]/default/data/delete/[table]/[id]
+    http://..../[app]/default/data/select/[table]
+    http://..../[app]/default/data/search/[table]
+    but URLs must be signed, i.e. linked with
+      A('table',_href=URL('data/tables',user_signature=True))
+    or with the signed load operator
+      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+    """
+    return dict(form=crud())

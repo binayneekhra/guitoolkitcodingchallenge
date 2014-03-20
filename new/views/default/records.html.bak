@@ -1,0 +1,23 @@
+{{extend 'layout.html'}}
+
+<h5>Not Evaluated</h5>
+{{for sentence in sentences:}}
+        {{if sentence.flagNoHint==False:}}
+        {{='-----'*10}}<br>
+        <strong><u>Source:</u></strong> {{=sentence.source,}}<br>
+        <strong><u>Apertium Output: </u></strong>{{=sentence.apertium,}}<br>
+        <strong><u>Reference Translation: </u></strong>{{=sentence.reference,}}<br>
+        {{pass}}
+{{pass}}
+
+<br><br>
+
+<h5>Evaluated</h5>
+{{for sentence in sentences:}}
+        {{if sentence.flag==True:}}
+        {{='-----'*10}}<br>
+        <strong><u>Source:</u></strong> {{=sentence.source,}}<br>
+        <strong><u>Apertium Output: </u></strong>{{=sentence.apertium,}}<br>
+        <strong><u>Reference Translation: </u></strong>{{=sentence.reference,}}<br>
+        {{pass}}
+{{pass}}

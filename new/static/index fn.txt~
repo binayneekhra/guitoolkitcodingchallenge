@@ -1,0 +1,84 @@
+      tempHint = hintLevel
+        hintFeedback = 'You have selected ' + request.vars.hintName#hintLevelForm.vars.hintName
+        if request.vars.hintName == 'No Hint':
+            hintLevel = 0
+        elif request.vars.hintName == 'Source Hint (Basque Sentence)':
+            hintLevel = 1
+        elif request.vars.hintName == 'Machine Translation Hint (Apertium Sentence)':
+            hintLevel = 2
+        elif request.vars.hintName == 'Both Source and Machine Translation Hint':
+            hintLevel = 3
+
+    sentences = db().select(db.sentence.ALL, orderby=db.sentence.id)
+    t0=0.0
+    t1=0.0
+          #for j in sentences:
+     #   testcase = j
+      #  break
+    #testcase = db(db.sentence.flagNoHint == False).select(db.sentence.ALL)
+    testcase = db.sentence(id>0)#for dummy value
+    #check temp
+    for testcase in sentences:
+        if testcase.flagNoHint == False:
+            break
+    #response.flash = testcase.source
+    
+    tempHint = hintLevel
+    #identify which test case to show, based on user selection for the hints
+    if hintLevel == 0:
+        for testcase in sentences:
+            if testcase.flagNoHint == False:
+                break
+    elif hintLevel == 1:
+        for testcase in sentences:
+            if testcase.flagSourceHint == False:
+               break
+    elif hintLevel == 2:
+        for testcase in sentences:
+            if testcase.flagApertiumHint == False:
+                ID = testcase.id
+                break
+    elif hintLevel == 3:
+       for testcase in sentences:
+            if testcase.flagBothHints == False:
+                ID = testcase.id
+                break
+
+    words = []
+    maskedWords={}
+    gussedWords=[]
+    clozeTable0 = db().select(db.clozeWords.ALL, orderby=db.clozeWords.sentenceID)
+
+    tempword='sdf'
+    clozeForm=FORM('testing:',
+              INPUT(_name='nani'),
+              INPUT(_type='submit', _value="I'm feeling lucky"),
+              _method='post')
+
+    #Generate dynamic SQL form for reference sentence
+    inputs_list = []
+    labelString = ''
+    temp = 'boo'
+    words = testcase.reference.split()
+    
+    #for i in range( (len(words)/5) *5):
+    #   if (i+1)%5: #label mein
+     #       labelString += words[i] +' '
+      #  else: # i is multiple of 5
+      #      inputs_list.append(Field(words[i]+'st', label = labelString, type='string'))
+      #      labelString = ''
+    #clozeForm = SQLFORM.factory(*inputs_list)
+
+    #if clozeForm.process().accepted:
+    
+    if request.vars.cloze:
+        response.flash = request.vars.hintName
+        db.clozeWords.insert(sentenceID=3, hintLevel=3, referenceWord='maksed', userGuess=request.vars.single)
+    else:
+        response.flash = 'helo'
+#        response.flash = 'nom nomed'
+
+
+    #response.flash = 'your comment is posted'
+    #db.person.insert(name="Bob")
+    return dict(words=words, clozeTable0=clozeTable0, maskedWords=maskedWords, t0=t0, t1=t1, hintLevelForm=hintLevelForm, hintLevel=hintLevel, hintFeedback=hintFeedback, testcase=testcase) #,clozeForm=clozeForm)

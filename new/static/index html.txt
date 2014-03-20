@@ -1,0 +1,46 @@
+{{from time import time}}
+
+{{=request.vars.hintName}}         
+{{=request.vars.cloze}}
+                
+{{if hintLevel != -1:}}
+<font color = "DarkOrange"><p>{{=hintFeedback}}</p></font>   
+    {{if hintLevel == 0:}}
+    
+    {{elif hintLevel == 1:}}
+       <font color = "green"><li>{{='Source Hint (Basque Sentence):'}} </li></font>
+       <p>{{=testcase.source}}</p>
+            
+    {{elif hintLevel == 2:}}
+        <font color = "green"><li>{{='Machine Translation Hint (Apertium Sentence):'}} </li></font>       
+        <p>{{=testcase.apertium}}</p>
+               
+    {{elif hintLevel == 3:}}
+        <font color = "green"><li>{{='Source Hint (Basque Sentence):'}} </li></font>
+        <p>{{=testcase.source}}</p>
+        <font color = "green"><li>{{='Machine Translation Hint (Apertium Sentence):'}} </li></font>
+        <p>{{=testcase.apertium}}</p>
+    {{pass}}
+
+    {{t0 = time()}}
+
+    <h6><u><b>Please fill the blanks:</b></u></h6>    
+          
+    <form enctype="multipart/form-data" method ="post"><!-- action ="thankyou">-->
+    {{for i in range(len(words)):}}
+        {{if ((i+1)%5==0):}}
+            <!--form -->
+            <strong>            {{=words[i]}}</strong>
+
+        {{else:}}
+            {{=words[i]}}
+        {{pass}}
+    {{pass}}
+    {{request.vars.hintName='hey!'}}
+        <input name='single', type="text" style="width:50px;"/>
+    <p><input name = 'cloze', type="submit" value="submit"/></td><p>
+</form>
+
+{{t1 = time()}}
+   
+{{pass}}<!--for "if hint != -1"-->

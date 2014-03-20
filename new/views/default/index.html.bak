@@ -1,0 +1,6 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,True}}
+{{extend 'layout.html'}}
+
+<h4>Basic GUI for Assimilation Evaluation Toolkit</h4>
+
+{{=hintLevelForm}}

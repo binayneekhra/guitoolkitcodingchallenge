@@ -1,0 +1,56 @@
+{{extend 'layout.html'}}
+
+<font color = "DarkOrange"><p>You have selected {{=hintName}}</p></font>
+
+{{if hintName == 'No Hint':}}
+
+{{elif hintName == 'Source Hint (Basque Sentence)':}}
+   <font color = "green"><li>{{='Source Hint (Basque Sentence):'}} </li></font>
+   <p>{{=testcase.source}}</p>
+        
+{{elif hintName == 'Machine Translation Hint (Apertium Sentence)':}}
+    <font color = "green"><li>{{='Machine Translation Hint (Apertium Sentence):'}} </li></font>       
+    <p>{{=testcase.apertium}}</p>
+           
+{{elif hintName == 'Both Source and Machine Translation Hint':}}
+    <font color = "green"><li>{{='Source Hint (Basque Sentence):'}} </li></font>
+    <p>{{=testcase.source}}</p>
+    <font color = "green"><li>{{='Machine Translation Hint (Apertium Sentence):'}} </li></font>
+    <p>{{=testcase.apertium}}</p>
+{{pass}}
+
+<!--fill the cloze-->
+
+
+
+<h6><u><b>Please fill the blanks:</b></u></h6>    
+
+<form enctype="multipart/form-data" method ="post" action ="thankyou">
+    {{for i in range(len(words)):}}
+            {{if ((i+1)%5==0):}}
+                <!--<strong>{{=words[i]}}</strong>-->
+                <!--cloze tests -->
+                <input name={{=temp[i/5]}} type="text" style="width:50px;"/>
+            {{else:}}
+            {{=words[i]}}
+            {{pass}}
+    {{pass}}
+    
+    <p><input name = 'cloze', type="submit" value="submit"/></td><p>
+</form>
+
+<!--caution
+ <form enctype="multipart/form-data" method ="post"><!-- action ="thankyou"
+    {{for i in range(len(words)):}}
+        {{if ((i+1)%5==0):}}
+            <!--form 
+            <strong>            {{=words[i]}}</strong>
+
+        {{else:}}
+            {{=words[i]}}
+        {{pass}}
+    {{pass}}
+    {{request.vars.hintName='hey!'}}
+        <input name='single', type="text" style="width:50px;"/>
+    <p><input name = 'cloze', type="submit" value="submit"/></td><p>
+</form>-->

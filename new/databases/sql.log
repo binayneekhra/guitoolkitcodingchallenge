@@ -1,0 +1,84 @@
+timestamp: 2014-03-17T10:13:04.292997
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2014-03-17T10:13:04.389633
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-03-17T10:13:04.489903
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-03-17T10:13:04.607318
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group(id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2014-03-17T10:13:04.808166
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-03-17T10:13:04.909156
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user(id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2014-03-17T10:13:05.009091
+CREATE TABLE sentence(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    flag CHAR(1),
+    source TEXT,
+    apertium TEXT,
+    reference TEXT
+);
+success!
+timestamp: 2014-03-17T10:13:05.110922
+CREATE TABLE clozeWords(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sentenceID CHAR(512),
+    referenceWord CHAR(512),
+    userGuess CHAR(512)
+);
+success!
+timestamp: 2014-03-17T12:14:40.033693
+ALTER TABLE sentence ADD flagsourcehint CHAR(1);
+timestamp: 2014-03-17T12:14:40.179696
+ALTER TABLE sentence ADD flagbothhints CHAR(1);
+timestamp: 2014-03-17T12:14:40.279533
+ALTER TABLE sentence ADD flagmthint CHAR(1);
+timestamp: 2014-03-17T12:14:40.380008
+ALTER TABLE sentence ADD flagnohint CHAR(1);
+timestamp: 2014-03-17T15:19:07.378605
+ALTER TABLE clozeWords ADD hintlevel CHAR(512);
+timestamp: 2014-03-18T17:43:02.284297
+ALTER TABLE sentence ADD flagapertiumhint CHAR(1);

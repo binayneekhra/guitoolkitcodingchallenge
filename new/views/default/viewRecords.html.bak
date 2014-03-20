@@ -1,0 +1,35 @@
+{{extend 'layout.html'}}
+
+<h5>Not Evaluated</h5>
+
+<ol>
+{{for sentence in notEvaluated:}}
+        {{='-----'*10}}<br>
+        <li><strong><u>Source:</u></strong> {{=sentence.source,}}</li>
+        
+{{pass}}
+</ol>
+
+<br><br>
+
+<h5>Evaluated</h5>
+<ol>
+{{for sentence in evaluated:}}
+        {{='-----'*10}}<br>
+        <li><strong><u>Source:</u></strong> {{=sentence.source,}}</li>
+        <strong> <font color = "green">Evaluated For:</font></strong>
+        {{if sentence.flagNoHint:}}
+            {{='No Hints'}}, 
+         {{pass}}
+        {{if sentence.flagSourceHint:}}
+            {{='Source Hint'}},
+         {{pass}}
+         {{if sentence.flagApertiumHint:}}
+            {{='Apertium Hint'}},
+         {{pass}}
+         {{if sentence.flagBothHints:}}
+            {{='For Both Source and Apertium Hints'}}<br>
+         {{pass}}
+        
+{{pass}}
+</ol>

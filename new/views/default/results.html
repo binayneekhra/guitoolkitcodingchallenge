@@ -1,0 +1,150 @@
+{{extend 'layout.html'}}
+
+<!-- #@author=Binay Neekhra, neekhra.binay@gmail.com-->
+
+<h4>For No Hints</h4>
+<ol>
+{{for sentence in evaluatedNoHint:}}
+        {{='-----'*10}}<br>
+        <li>
+           <strong><u>Source: </u></strong> {{=sentence.source}}<br>           
+           <strong><u>Data: </u></strong><br>           
+           <table>           
+           {{correctResponse =0}}
+           {{blanksLeft =0}}
+           {{ totalResponse =0}}
+           {{for pair in clozeTable0:}}
+               
+               {{if pair.sentenceID  ==sentence.id:}}
+                    {{if pair.referenceWord ==pair.userGuess:}}
+                        {{correctResponse +=1 }}
+                    {{elif pair.userGuess =='':}}
+                        {{blanksLeft +=1}}
+                    {{pass}}
+                    {{ totalResponse +=1}}                   
+                   <tr> 
+                   <col style="background-color: aqua;" />                  
+                   <td>{{ =pair.referenceWord}}</td>  <td>{{ =pair.userGuess}}</td>
+                   </tr>
+                {{pass}}
+           {{pass}}
+           </table>           
+            <br>  
+            {{if totalResponse!=0: }}         
+            <u>Correct Responses = {{=correctResponse*100/totalResponse}} %</u><br>
+            <u>Blanks Left = {{=blanksLeft*100/totalResponse}} %</u><br> 
+            {{pass}}                              
+{{pass}}                  
+</ol>
+
+<h4>For Source Hint</h4>
+<ol>
+{{for sentence in evaluatedSourceHint:}}
+        {{='-----'*10}}<br>
+        <li>
+           <strong><u>Source: </u></strong> {{=sentence.source}}<br>           
+           <strong><u>Data: </u></strong><br>           
+           <table>           
+           {{correctResponse =0}}
+           {{blanksLeft =0}}
+           {{ totalResponse =0}}
+           {{for pair in clozeTable1:}}
+                 
+               {{if pair.sentenceID  ==sentence.id:}}
+                   {{totalResponse +=1}}
+                    {{if pair.referenceWord ==pair.userGuess:}}
+                        {{correctResponse +=1 }}
+                    {{elif pair.userGuess =='':}}
+                        {{blanksLeft +=1}}
+                       
+                    {{pass}}                            
+                   <tr> 
+                   <col style="background-color: aqua;" />
+                                     
+                   <td>{{ =pair.referenceWord}}</td>  <td>{{ =pair.userGuess}}</td>
+                   </tr>
+                {{pass}}
+           {{pass}}
+           </table>
+            <br> 
+             {{if totalResponse!=0: }}
+            <u>Correct Responses = {{=correctResponse*100/totalResponse}} %</u><br>
+            <u>Blanks Left = {{=blanksLeft*100/totalResponse}} %</u><br>             
+           {{pass}}
+{{pass}}                  
+</ol>
+
+
+<h4>For Machine Translation Hint</h4>
+<ol>
+{{for sentence in evaluatedApertiumHint:}}
+        {{='-----'*10}}<br>
+        <li>
+           <strong><u>Source: </u></strong> {{=sentence.source}}<br>           
+           <strong><u>Data: </u></strong><br>           
+           <table>           
+           {{correctResponse =0}}
+           {{blanksLeft =0}}
+           {{ totalResponse =0}}
+           {{for pair in clozeTable2:}}
+                 
+               {{if pair.sentenceID  ==sentence.id:}}
+                   {{totalResponse +=1}} 
+                    {{if pair.referenceWord ==pair.userGuess:}}
+                        {{correctResponse +=1 }}
+                    {{elif pair.userGuess =='':}}
+                        {{blanksLeft +=1}}
+                       
+                    {{pass}}                            
+                   <tr> 
+                   <col style="background-color: aqua;" />
+                                     
+                   <td>{{ =pair.referenceWord}}</td>  <td>{{ =pair.userGuess}}</td>
+                   </tr>
+                {{pass}}
+           {{pass}}
+           </table>           
+            <br> 
+             {{if totalResponse!=0: }}
+            <u>Correct Responses = {{=correctResponse*100/totalResponse}} %</u><br>
+            <u>Blanks Left = {{=blanksLeft*100/totalResponse}} %</u><br> 
+            {{pass}}                              
+{{pass}}                  
+</ol>
+
+<h4>Both Source and Machine Translation Hint</h4>
+<ol>
+{{for sentence in evaluatedBothHints:}}
+        {{='-----'*10}}<br>
+        <li>
+           <strong><u>Source: </u></strong> {{=sentence.source}}<br>           
+           <strong><u>Data: </u></strong><br>           
+           <table>           
+           {{correctResponse =0}}
+           {{blanksLeft =0}}
+           {{ totalResponse =0}}
+           {{for pair in clozeTable3:}}
+                 
+               {{if pair.sentenceID  ==sentence.id:}}
+                   {{totalResponse +=1}} 
+                    {{if pair.referenceWord ==pair.userGuess:}}
+                        {{correctResponse +=1 }}
+                    {{elif pair.userGuess =='':}}
+                        {{blanksLeft +=1}}
+                       
+                    {{pass}}                            
+                   <tr> 
+                   <col style="background-color: aqua;" />
+                                     
+                   <td>{{ =pair.referenceWord}}</td>  <td>{{ =pair.userGuess}}</td>
+                   </tr>
+                {{pass}}
+           {{pass}}
+           </table>           
+            <br> 
+             {{if totalResponse!=0: }}
+            <u>Correct Responses = {{=correctResponse*100/totalResponse}} %</u><br>
+            <u>Blanks Left = {{=blanksLeft*100/totalResponse}} %</u><br>             
+            {{pass}}
+{{pass}}                  
+</ol>
